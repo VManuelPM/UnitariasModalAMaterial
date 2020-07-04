@@ -1,17 +1,26 @@
 import { TestBed, async } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
+import { of } from 'rxjs';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 
 describe('AppComponent', () => {
+
+  let dialogSpy: jasmine.Spy;
+  let dialogRefSpyObj = jasmine.createSpyObj({afterClosed: of({}), close: null});
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule
+        RouterTestingModule,
+        MatDialogModule
       ],
       declarations: [
         AppComponent
       ],
     }).compileComponents();
+
+    dialogSpy = spyOn(TestBed.get(MatDialog), 'open').and.returnValue(dialogRefSpyObj);
   }));
 
   it('should create the app', () => {
@@ -26,10 +35,12 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('PruebasAngular');
   });
 
-  it('should render title', () => {
+
+  it('should open Dialog', () => {
     const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('PruebasAngular app is running!');
+    const app = fixture.debugElement.componentInstance;
+    app.openDialog();
+    expect(dialogSpy).toHaveBeenCalled();
   });
+
 });
